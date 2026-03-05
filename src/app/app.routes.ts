@@ -19,7 +19,7 @@ export const routes: Routes = [
 
     {
     path: '',
-    redirectTo: '/test-connection',
+    redirectTo: '/landing-page',
     pathMatch: 'full'
     }
 
