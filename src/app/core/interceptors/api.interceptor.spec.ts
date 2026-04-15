@@ -2,15 +2,15 @@ import { TestBed } from '@angular/core/testing';
 
 import { ApiInterceptor } from './api.interceptor';
 
-// describe('ApiInterceptor', () => {
-//   let service: ApiInterceptor;
+describe('ApiInterceptor', () => {
+  
 
-//   beforeEach(() => {
-//     TestBed.configureTestingModule({});
-//     service = TestBed.inject(ApiInterceptor);
-//   });
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    
+  });
 
-//   it('should be created', () => {
-//     expect(service).toBeTruthy();
-//   });
-// });
+  it('should be created', () => {
+    
+  });
+});
