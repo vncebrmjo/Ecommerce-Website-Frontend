@@ -1,60 +1,38 @@
-// src/app/core/services/api.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError, timeout, catchError } from 'rxjs';
+import { Observable, throwError} from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { TestConnectionModel } from '../models/test-connection.model';
-
-/**
- * Base API service for all HTTP communications
- * Provides centralized configuration and error handling
- */
+import { ApiErrorResponseModel } from '../models/api-error-response.model';
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiUrl;
-  private readonly requestTimeout = environment.apiTimeout;
-
-  /**
-   * Performs a health check against the backend API
-   * @returns Observable of health check response
-   */
+  protected readonly http = inject(HttpClient);
   
-  checkHealth(): Observable<TestConnectionModel> {
-    return this.http.get<TestConnectionModel>(`${this.baseUrl}/testconnection`).pipe(
-      timeout(this.requestTimeout),
-      catchError(this.handleError)
-    );
-  }
-
-  /**
-   * Centralized error handling for HTTP requests
-   * @param error - HTTP error response
-   * @returns Observable that emits an error
-   */
-
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMessage = 'An unknown error occurred';
-
-    if (error.error instanceof ErrorEvent) {
-      // Client-side or network error
-      errorMessage = `Network error: ${error.error.message}`;
-    } else {
-      // Backend returned an unsuccessful response code
-      errorMessage = `Server error: ${error.status} - ${error.message}`;
-      
-      if (error.status === 0) {
-        errorMessage = 'Unable to connect to server. Please check if the backend is running.';
-      }
-    }
-
+  protected handleError(error: HttpErrorResponse): Observable<never> {
     if (environment.enableLogging) {
       console.error('API Error:', error);
     }
 
+    const apiError: ApiErrorResponseModel = error.error ?? {
+      status: error.status,
+      title: this.getErrorTitle(error.status),
+      detail: error.message
+    };
 
-    return throwError(() => new Error(errorMessage));
+    return throwError(() => apiError);
+  }
+
+  private getErrorTitle(status: number): string {
+    switch (status) {
+      case 0:   return 'Unable to connect to server.';
+      case 400: return 'Bad Request';
+      case 401: return 'Unauthorized';
+      case 403: return 'Forbidden';
+      case 404: return 'Not Found';
+      case 409: return 'Conflict';
+      case 500: return 'Internal Server Error';
+      default:  return 'Unknown Error';
+    }
   }
 }

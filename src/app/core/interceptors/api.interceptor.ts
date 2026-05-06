@@ -1,29 +1,11 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
-
-
-// HTTP interceptor for adding global headers and error handling
+import { HttpInterceptorFn } from '@angular/common/http';
 
 export const ApiInterceptor: HttpInterceptorFn = (req, next) => {
-  // Clone request and add common headers
+  // Add withCredentials to every request for CORS
   const modifiedReq = req.clone({
-    withCredentials: true // Enable credentials for CORS
+    withCredentials: true
   });
 
-  return next(modifiedReq).pipe(
-    catchError((error: HttpErrorResponse) => {
-      // Global error logging
-      if (environment.enableLogging) {
-        console.error('HTTP Error:', {
-          status: error.status,
-          message: error.message,
-          url: error.url
-        });
-      }
+  return next(modifiedReq);
 
-      return throwError(() => error);
-    })
-  );
 };
