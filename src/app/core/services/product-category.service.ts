@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ProductCategoryRequestModel, ProductCategoryResponseModel} from '../models/product-category.model';
-import { ApiService } from './api.service';
+import { ApiService } from './api/api.service';
 @Injectable({
   providedIn: 'root',
 })

@@ -8,11 +8,17 @@ export const routes: Routes = [
         .then(m => m.LandingPage ),
     title: 'Landing Page'
     },
+    {
+    path: 'login',
+    loadComponent: () => 
+      import('./pages/login/login')
+        .then(m => m.Login ),
+    title: 'Login'
+    },
 
     {
     path: '',
     redirectTo: '/landing-page',
     pathMatch: 'full'
     }
-
 ];
