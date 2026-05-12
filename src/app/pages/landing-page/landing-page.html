@@ -63,16 +63,15 @@
 <div class="bg-white border-b border-gray-200">
   <div class="overflow-x-auto px-4 py-3">
     <div class="flex gap-2 min-w-max">
-      @for (category of categories(); track category.name) {
+      @for (category of categories(); track category.id) {
         <button
           type="button"
-          (click)="selectCategory(category.name)"
-          [class]="isActive(category.name) 
+          (click)="selectCategory(category.productCategoryName)"
+          [class]="isActive(category.productCategoryName) 
             ? 'px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-medium whitespace-nowrap hover:bg-gray-800 transition-colors flex items-center gap-2' 
             : 'px-4 py-2 text-gray-700 rounded-full text-sm font-medium whitespace-nowrap hover:bg-gray-100 transition-colors flex items-center gap-2'"
         >
-          <span class="text-base">{{ category.icon }}</span>
-          <span>{{ category.name }}</span>
+          <span>{{ category.productCategoryName }}</span>
         </button>
       }
     </div>
