@@ -1,11 +1,21 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { AuthService } from '../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 export const ApiInterceptor: HttpInterceptorFn = (req, next) => {
-  // Add withCredentials to every request for CORS
-  const modifiedReq = req.clone({
-    withCredentials: true
-  });
+  const token    = inject(AuthService).token();
+  const isOwnApi = req.url.startsWith(environment.apiUrl);
 
-  return next(modifiedReq);
+  if (isOwnApi) {
+    return next(
+      req.clone({
+        ...(token ? { setHeaders: { Authorization: `Bearer ${token}` } } : {}),
+        withCredentials: true, 
+      })
+    );
+  }
+
+  return next(req);
 
 };
