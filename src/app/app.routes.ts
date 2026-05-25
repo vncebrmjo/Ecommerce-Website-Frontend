@@ -17,6 +17,15 @@ export const routes: Routes = [
     },
 
     {
+    path: 'forbidden',
+    loadComponent: () => 
+      import('./pages/forbidden/forbidden')
+        .then(m => m.Forbidden),
+    title: 'Forbidden'
+    },
+
+
+    {
     path: '',
     redirectTo: '/landing-page',
     pathMatch: 'full'
