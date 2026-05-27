@@ -78,6 +78,6 @@ export class AuthService {
     this.sessionHelper.remove(this.USER_KEY);
     this._token.set(null);
     this._currentUser.set(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/landing-page']);
   }
 }

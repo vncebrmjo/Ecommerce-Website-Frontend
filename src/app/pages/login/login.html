@@ -1,1 +1,140 @@
-<p>login works!</p>
+<div class="min-h-screen bg-slate-50 flex items-center justify-center px-4">
+  <div class="w-full max-w-sm">
+
+    <!-- Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
+
+      <!-- Header -->
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
+        <p class="text-sm text-slate-500 mt-1">Sign in to your account to continue</p>
+      </div>
+
+      <!-- Error -->
+      @if (errorMessage()) {
+        <div class="flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-600
+                    text-sm rounded-xl px-4 py-3 mb-5" role="alert" aria-live="assertive">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+            class="w-4 h-4 shrink-0" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+          </svg>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="space-y-4">
+
+        <!-- Username -->
+        <div>
+          <label for="userName" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
+            Username
+          </label>
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+            </svg>
+            <input
+              id="userName"
+              type="text"
+              formControlName="userName"
+              placeholder="Enter your username"
+              autocomplete="username"
+              aria-describedby="userName-error"
+              [attr.aria-invalid]="form.get('userName')?.invalid && form.get('userName')?.touched"
+              class="w-full pl-10 pr-4 py-2.5 text-sm text-slate-900 bg-white border border-slate-200 rounded-xl outline-none transition
+                    focus:border-indigo-500 focus:ring-3 focus:ring-indigo-500/10
+                    aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-400/10"
+            />
+          </div>
+          @if (form.get('userName')?.invalid && form.get('userName')?.touched) {
+            <p id="userName-error" class="text-xs text-red-500 mt-1.5" role="alert">
+              @if (form.get('userName')?.hasError('required')) { Username is required. }
+              @else if (form.get('userName')?.hasError('maxlength')) { Username cannot exceed 25 characters. }
+            </p>
+          }
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5">
+            Password
+          </label>
+          <div class="relative">
+            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+            </svg>
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              aria-describedby="password-error"
+              [attr.aria-invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+              class="w-full pl-10 pr-10 py-2.5 text-sm text-slate-900 bg-white border border-slate-200 rounded-xl outline-none transition
+                    focus:border-indigo-500 focus:ring-3 focus:ring-indigo-500/10
+                    aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-400/10"
+            />
+            <button
+              type="button"
+              (click)="togglePassword()"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-500
+                      transition-colors focus-visible:outline-none focus-visible:ring-2
+                    focus-visible:ring-indigo-500 rounded"
+            >
+              @if (showPassword()) {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                  <path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" />
+                  <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 010-1.186A10.004 10.004 0 0110 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0110 17c-4.257 0-7.893-2.66-9.336-6.41zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                  <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 00-1.06 1.06l14.5 14.5a.75.75 0 101.06-1.06l-1.745-1.745a10.029 10.029 0 003.3-4.38 1.651 1.651 0 000-1.185A10.004 10.004 0 009.999 3a9.956 9.956 0 00-4.744 1.194L3.28 2.22zM7.752 6.69l1.092 1.092a2.5 2.5 0 013.374 3.373l1.091 1.092a4 4 0 00-5.557-5.557z" clip-rule="evenodd" />
+                  <path d="M10.748 13.93l2.523 2.523a10.003 10.003 0 01-3.27.547c-4.258 0-7.894-2.66-9.337-6.41a1.651 1.651 0 010-1.186A10.007 10.007 0 012.839 6.02L6.07 9.252a4 4 0 004.678 4.678z" />
+                </svg>
+              }
+            </button>
+          </div>
+          @if (form.get('password')?.invalid && form.get('password')?.touched) {
+            <p id="password-error" class="text-xs text-red-500 mt-1.5" role="alert">
+              @if (form.get('password')?.hasError('required')) { Password is required. }
+              @else if (form.get('password')?.hasError('minlength')) { Password must be at least 8 characters. }
+            </p>
+          }
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          [disabled]="isLoading()"
+          [attr.aria-busy]="isLoading()"
+          class="w-full mt-2 flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-900 text-white
+                text-sm font-semibold rounded-xl hover:bg-slate-700 active:scale-[0.98]
+                transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+        >
+          @if (isLoading()) {
+            <span class="loading loading-spinner loading-xs" aria-hidden="true"></span>
+            <span>Signing in...</span>
+          } @else {
+            <span>Sign in</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+              class="w-4 h-4" aria-hidden="true">
+              <path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+            </svg>
+          }
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-xs text-slate-400 mt-6">
+      Don't have an account?
+      <a routerLink="/register" class="text-indigo-600 font-semibold hover:underline">Sign up</a>
+    </p>
+
+  </div>
+</div>
