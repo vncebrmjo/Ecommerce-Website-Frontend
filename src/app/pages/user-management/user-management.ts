@@ -50,7 +50,7 @@ export class UserManagement {
   readonly categoryForm = this.fb.group({
     productCategoryName: ['', [
       Validators.required,
-      Validators.maxLength(20),
+      Validators.maxLength(50),
     ]],
     productCategoryDescription: ['', [
       Validators.required,

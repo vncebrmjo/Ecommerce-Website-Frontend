@@ -14,19 +14,22 @@ export const authGuard: CanActivateFn = (_, state) => {
   });
 };
 
+// Redirects already-authenticated users to the landing-page
+export const alreadyAuthGuard: CanActivateFn = () => {
+  const auth   = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.isAuthenticated()) {
+    return new RedirectCommand(router.parseUrl('/landing-page'), { replaceUrl: true });
+  }
+  return true;
+};
+
 export function requireRoles(allowedRoles: string[]): CanActivateFn {
   return (_, state) => {
     const auth       = inject(AuthService);
     const router     = inject(Router);
-    const hasSession = !!auth.token() && !!auth.currentUser();
-
-    if (!hasSession) {
-      return new RedirectCommand(router.parseUrl('/login'), {
-        replaceUrl: true,
-        info: { returnUrl: state.url },
-      });
-    }
-
+    
     if (!auth.isAuthenticated()) {
       return new RedirectCommand(router.parseUrl('/login'), {
         replaceUrl: true, 
@@ -38,7 +41,7 @@ export function requireRoles(allowedRoles: string[]): CanActivateFn {
     if (role && allowedRoles.includes(role)) return true;
 
     return new RedirectCommand(router.parseUrl('/forbidden'), {
-       replaceUrl: true,
+      replaceUrl: true,
     });
   };
 }

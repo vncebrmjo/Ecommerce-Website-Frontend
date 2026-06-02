@@ -1,5 +1,5 @@
 import {Component,signal,inject,output,ChangeDetectionStrategy} from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiErrorResponseService } from '../../core/services/api/api-error-response.service';
@@ -11,11 +11,11 @@ import { ApiErrorResponseService } from '../../core/services/api/api-error-respo
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Login {
-  private readonly fb           = inject(FormBuilder);
+  private readonly fb = inject(FormBuilder);
   private readonly authService  = inject(AuthService);
   private readonly errorService = inject(ApiErrorResponseService);
+  private readonly router = inject(Router);
 
-  readonly closed = output<void>();
   readonly isLoading    = signal(false);
   readonly errorMessage = signal<string | null>(null);
   readonly showPassword = signal(false);
@@ -29,17 +29,6 @@ export class Login {
     this.showPassword.update((v) => !v);
   }
 
- 
-  goBack(): void {
-    this.closed.emit();
-  }
-  onBackdropClick(event: MouseEvent): void {
-    // Guard: only close when the backdrop itself is the target
-    if (event.target === event.currentTarget) {
-      this.closed.emit();
-    }
-  }
-
   onSubmit(): void {
     if (this.form.invalid || this.isLoading()) return;
 
@@ -50,9 +39,13 @@ export class Login {
 
     this.authService.login({ userName: userName!, password: password! }).subscribe({
       next: () => {
-        // On success the modal closes; routing is handled by the parent (landing-page).
         this.isLoading.set(false);
-        this.closed.emit();
+        const role = this.authService.userRole();
+        if (role === 'Admin' || role === 'SuperAdmin') {
+          this.router.navigate(['/user-management']);
+        } else {
+          this.router.navigate(['/landing-page']);
+        }
       },
       error: (err) => {
         this.isLoading.set(false);

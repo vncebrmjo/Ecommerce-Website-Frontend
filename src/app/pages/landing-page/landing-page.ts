@@ -4,18 +4,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ProductCategoryService } from '../../core/services/product-category.service';
 import { AuthService } from '../../core/services/auth.service';
 import { DatePipe } from '@angular/common';
-import { Login } from '../login/login';
 
 @Component({
   selector: 'app-landing-page',
-  imports: [RouterLink, DatePipe, Login],
+  imports: [RouterLink, DatePipe],
   templateUrl: './landing-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
   private readonly productCategoryService = inject(ProductCategoryService);
-  private readonly authService            = inject(AuthService);
-  private readonly router                 = inject(Router);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly categories = toSignal(
     this.productCategoryService.getAllProductCategory(),
@@ -49,17 +48,11 @@ export class LandingPage {
     this.isLoginOpen.set(true);
   }
 
-
-  closeLogin(): void {
-    this.isLoginOpen.set(false);
-    const role = this.currentUser()?.role;
-    if (this.isAuthenticated() && (role === 'SuperAdmin' || role === 'Admin')) {
-      this.router.navigate(['/user-management']);
-    }
-  }
-
   logout(): void {
     this.isSidebarOpen.set(false);
-    this.authService.logout().subscribe();
+    this.authService.logout().subscribe({
+    next: () => this.router.navigate(['/login']),
+    error: () => this.router.navigate(['/login']),
+  });
   }
 }
