@@ -7,6 +7,7 @@ import { ApiErrorResponseService } from '../../core/services/api/api-error-respo
 import { ProductCategoryService } from '../../core/services/product-category.service';
 import { UserResponseModel } from '../../core/models/auth.model';
 import { ProductCategoryResponseModel } from '../../core/models/product-category.model';
+import { userManagementNavLinks, NavLink } from './user-management.constants';
 
 const ALL_ROLES = ['SuperAdmin', 'Admin', 'Merchant', 'Customer'];
 
@@ -39,13 +40,15 @@ export class UserManagement {
   readonly updatingId      = signal<number | null>(null);
 
   // Category modal state
-  readonly isCategoryModalOpen    = signal(false);
-  readonly categories             = signal<ProductCategoryResponseModel[]>([]);
-  readonly isCategoryLoading      = signal(false);
-  readonly categoryError          = signal<string | null>(null);
-  readonly editingCategory        = signal<ProductCategoryResponseModel | null>(null);
+  readonly isCategoryModalOpen     = signal(false);
+  readonly categories              = signal<ProductCategoryResponseModel[]>([]);
+  readonly isCategoryLoading       = signal(false);
+  readonly categoryError           = signal<string | null>(null);
+  readonly editingCategory         = signal<ProductCategoryResponseModel | null>(null);
   readonly deleteConfirmCategoryId = signal<number | null>(null);
-  readonly isSavingCategory       = signal(false);
+  readonly isSavingCategory        = signal(false);
+
+  
 
   readonly categoryForm = this.fb.group({
     productCategoryName: ['', [
@@ -82,6 +85,16 @@ export class UserManagement {
     this.users().filter((u) => u.role === 'Admin' || u.role === 'SuperAdmin').length
   );
   readonly showingCount = computed(() => this.filteredUsers().length);
+
+  readonly isNavOpen = signal(false);
+  
+  readonly navLinks: NavLink[] = userManagementNavLinks;
+
+
+  readonly isRoleFilterOpen = signal(false);
+  
+  readonly openRoleDropdownId = signal<number | null>(null);
+
 
   constructor() {
     this.loadUsers();
@@ -172,8 +185,12 @@ export class UserManagement {
   }
 
   logout(): void {
-    this.authService.logout().subscribe();
-  }
+  this.isNavOpen.set(false);
+  this.authService.logout().subscribe({
+    next: () => this.router.navigate(['/login']),
+    error: () => this.router.navigate(['/login']),
+  });
+}
 
   canEditUser(user: UserResponseModel): boolean {
     if (user.userName === this.currentUser()?.userName) return false;
@@ -314,4 +331,10 @@ export class UserManagement {
     this.errorMessage.set(null);
     this.successMessage.set(null);
   }
+
+  navigateTo(path: string): void {
+  this.isNavOpen.set(false);
+  this.router.navigate([path]);
+}
+
 }
