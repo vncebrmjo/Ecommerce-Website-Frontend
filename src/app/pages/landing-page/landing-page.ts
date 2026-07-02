@@ -1,24 +1,32 @@
 import { Component, signal, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ProductCategoryService } from '../../core/services/product-category.service';
+import { AuthService } from '../../core/services/auth.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-landing-page',
-  imports: [],
+  imports: [RouterLink, DatePipe],
   templateUrl: './landing-page.html',
-  styleUrl: './landing-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
   private readonly productCategoryService = inject(ProductCategoryService);
-  
-  
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   readonly categories = toSignal(
     this.productCategoryService.getAllProductCategory(),
     { initialValue: [] }
   );
 
-  readonly activeCategory = signal<string>('All Products');
+  readonly activeCategory  = signal<string>('All Products');
+  readonly isSidebarOpen   = signal(false);
+
+  readonly isLoginOpen     = signal(false);
+  readonly isAuthenticated = this.authService.isAuthenticated;
+  readonly currentUser     = this.authService.currentUser;
 
   selectCategory(category: string): void {
     this.activeCategory.set(category);
@@ -28,5 +36,23 @@ export class LandingPage {
     return this.activeCategory() === category;
   }
 
-  
+  toggleSidebar(): void {
+    this.isSidebarOpen.update((v) => !v);
+  }
+
+  closeSidebar(): void {
+    this.isSidebarOpen.set(false);
+  }
+
+  goToLogin(): void {
+    this.isLoginOpen.set(true);
+  }
+
+  logout(): void {
+    this.isSidebarOpen.set(false);
+    this.authService.logout().subscribe({
+    next: () => this.router.navigate(['/login']),
+    error: () => this.router.navigate(['/login']),
+  });
+  }
 }
