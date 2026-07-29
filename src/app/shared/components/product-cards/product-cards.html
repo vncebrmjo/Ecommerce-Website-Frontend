@@ -1,1 +1,52 @@
-<p>product-cards works!</p>
+<article
+  class="group bg-white rounded-2xl border border-slate-200 overflow-hidden
+         hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+>
+  <!-- Image placeholder: ProductEntity has no image field yet — swap this
+       for a real <img> once the backend adds one. -->
+  <div class="aspect-square bg-slate-100 flex items-center justify-center">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+      stroke-width="1" stroke="currentColor" class="w-12 h-12 text-slate-300" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+    </svg>
+  </div>
+
+  <div class="p-4 space-y-1.5">
+    <!-- Category badge -->
+    <span class="inline-block text-[11px] font-semibold text-indigo-600 uppercase tracking-wide">
+      {{ product().productCategoryName }}
+    </span>
+
+    <h3 class="font-semibold text-slate-900 leading-snug line-clamp-2">
+      {{ product().productName }}
+    </h3>
+
+    @if (product().merchantName) {
+      <p class="text-xs text-slate-400">Sold by {{ product().merchantName }}</p>
+    }
+
+    <div class="flex items-center justify-between pt-1">
+      <span class="text-lg font-bold text-slate-900">
+        {{ product().price | currency }}
+      </span>
+
+      @if (product().stockQuantity > 0) {
+        <span class="text-xs font-medium text-emerald-600">In stock</span>
+      } @else {
+        <span class="text-xs font-medium text-red-500">Out of stock</span>
+      }
+    </div>
+
+    <button
+      type="button"
+      [disabled]="product().stockQuantity === 0"
+      class="w-full mt-2 px-4 py-2 text-sm font-semibold rounded-xl transition
+             bg-slate-900 text-white hover:bg-slate-700 active:scale-[0.98]
+             disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed
+             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+    >
+      Add to cart
+    </button>
+  </div>
+</article>
